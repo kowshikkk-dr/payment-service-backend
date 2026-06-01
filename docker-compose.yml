@@ -1,0 +1,44 @@
+services:
+
+  postgres:
+    image: postgres:16
+
+    container_name: payment-postgres
+
+    restart: always
+
+    environment:
+      POSTGRES_DB: paymentdb
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin123
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  backend:
+
+    build: .
+
+    container_name: payment-backend
+
+    restart: always
+
+    depends_on:
+      - postgres
+
+    ports:
+      - "3000:3000"
+
+    environment:
+      DATABASE_URL: postgresql://admin:admin123@postgres:5432/paymentdb
+      PORT: 3000
+      FRONTEND_URL: http://51.20.4.215:3000
+      RAZORPAY_TEST_KEY_ID: rzp_test_SwIhQWC8yFkaK6
+      RAZORPAY_TEST_SECRET_KEY: ZrJjltD8Msl6m2yMI8kk8Yer
+      RAZORPAY_WEBHOOK_SECRET: testsecret123
+
+volumes:
+  postgres_data:
